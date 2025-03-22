@@ -1,0 +1,168 @@
+# -*- coding:  Windows-1251 -*-
+from xmlrpc.client import DateTime
+import telebot
+from datetime import datetime
+from telebot import types # äëÿ óêàçàíèå òèïîâ
+
+API_TOKEN = '7993358762:AAEbNLpTuUHN7PCrh1mwM1PYAGne8XIjvXo'
+SEMESTR_START_MOUTH = 2
+SEMESTR_START_DAY = 10
+DAY_COUNT = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+WEEK_DAYS = ['Ïîíåäåëüíèê', 'Âòîðíèê', 'Ñðåäà', '×åòâåðã', 'Ïÿòíèöà', 'Ñóááîòà', 'Âîñêðåñåíüå']
+
+bot = telebot.TeleBot(API_TOKEN)
+CHAT_ID = 1095553887
+
+
+@bot.message_handler(commands=['help', 'start'])
+def start(message):
+    markup = types.InlineKeyboardMarkup()
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    btn1 = types.KeyboardButton("Ñåãîäíÿ")
+    btn2 = types.KeyboardButton("Çàâòðà")
+    markup.add(btn1, btn2)
+    bot.send_message(message.chat.id, "Ãîéäà, áðàò. Äàâàé ïîäñêàæó ðàñïèñàíèå.", reply_markup=markup)
+
+
+
+
+
+@bot.message_handler(content_types=['text'])
+def send_timetable(message):
+    if (message.text == "Ñåãîäíÿ"):
+        current_datatime = datetime.today()
+        WD = current_datatime.weekday()
+        daysAfter = current_datatime.day
+
+
+        for i in range(SEMESTR_START_MOUTH, current_datatime.month):
+            daysAfter += DAY_COUNT[i-1]
+
+        daysAfter -= SEMESTR_START_DAY
+
+        thisWeek = daysAfter // 7 + 1
+
+        if thisWeek % 2 == 0:
+            bot.send_message(message.chat.id, f'{current_datatime.day} . {current_datatime.month} . {current_datatime.year}\n×ÅÒÍÀß íåäåëÿ ¹{thisWeek}\n{WEEK_DAYS[WD]}')
+        
+            match WD:
+                case 0:
+                    bot.send_message(message.chat.id, "16:45 - ïð ÝÊ ÏÎ ÔÊ È ÑÏÎÐÒÓ")
+
+                case 1:
+                    bot.send_message(message.chat.id, "14:55 --- ïð ÂÛÑØ. ÌÀÒÅÌÀÒ --- 213* (ÓËÊ)\n\n16:45 --- ëåê ÔÈÇÈÊÀ --- 327* (ÓËÊ)")
+
+                case 2:
+                    bot.send_message(message.chat.id, "10:50 --- ïð ÔÈÇÈÊÀ --- 328* (ÓËÊ)/n12:40 --- ëåê ÈÍÔ.ÒÅÕÍ. È ÏÐÎÃÐ. --- 310 (ÓËÊ)/n14:55 --- ïð ÝÊ ÏÎ ÔÊ È ÑÏÎÐÒÓ")
+
+                case 3:
+                    bot.send_message(message.chat.id, "10:50 --- ëåê Ä.ÌÀÒ.È ÌÀÒ.ËÎÃ --- 450 (ÓËÊ)\n12:40 --- ëåê ÈÑÒÎÐÈß --- 443 (ÓËÊ)\n14:55 --- ïð ÈÑÒÎÐÈß --- 487 (ÓËÊ)")
+
+                case 4:
+                    bot.send_message(message.chat.id, "12:40 --- ëåê ÂÛÑØ. ÌÀÒÅÌÀÒ --- 493 (ÓËÊ)\n14:55 --- ïð ÈÍ.ßÇ. --- 309* (ÓËÊ)")
+
+                case 5:
+                    bot.send_message(message.chat.id, "09:00 --- ëåê ÑÒÐÓÊ.È ÎÐÃ.ÄÀÍÍ --- 526* (ÓËÊ)\n10:50 --- ïð ÈÍÔ.ÒÅÕÍ. È ÏÐÎÃÐ. --- 256* (ÓËÊ)\n12:40 --- ïð Ä.ÌÀÒ.È ÌÀÒ.ËÎÃ --- 422* (ÓËÊ)")
+
+                case 6:
+                    bot.send_message(message.chat.id, "ÏÀÐ ÍÅÒ! ÃÎÎÎÎÎÎÎÎË")
+
+        else:
+            bot.send_message(message.chat.id, f'{current_datatime.day} . {current_datatime.month} . {current_datatime.year}\nÍÅ×ÅÒÍÀß íåäåëÿ ¹{thisWeek}\n{WEEK_DAYS[WD]}')
+            match WD:
+                case 0:
+                    bot.send_message(message.chat.id, "16:45 - ïð ÝÊ ÏÎ ÔÊ È ÑÏÎÐÒÓ")
+
+                case 1:
+                    bot.send_message(message.chat.id, "14:55 --- ïð ÂÛÑØ. ÌÀÒÅÌÀÒ --- 213* (ÓËÊ)\n16:45 --- ëåê ÔÈÇÈÊÀ --- 327* (ÓËÊ)")
+
+                case 2:
+                    bot.send_message(message.chat.id, "10:50 --- ëàá ÔÈÇÈÊÀ --- 323* (ÓËÊ)\n12:40 --- ëåê ÈÍÔ.ÒÅÕÍ. È ÏÐÎÃÐ. --- 310 (ÓËÊ)\n14:55 --- ïð ÝÊ ÏÎ ÔÊ È ÑÏÎÐÒÓ")
+
+                case 3:
+                    bot.send_message(message.chat.id, "09:00 --- ëàá ÝÊÎËÎÃÈß --- 384à (ÓËÊ)\n10:50 --- ëåê Ä.ÌÀÒ.È ÌÀÒ.ËÎÃ --- 450 (ÓËÊ)\n12:40 --- ëåê ÈÑÒÎÐÈß --- 443 (ÓËÊ)")
+
+                case 4:
+                    bot.send_message(message.chat.id, "10:50 --- ëåê ÝÊÎËÎÃÈß --- 374 (ÓËÊ)\n12:40 --- ëåê ÂÛÑØ. ÌÀÒÅÌÀÒ --- 493 (ÓËÊ)\n14:55 --- ïð ÈÍ.ßÇ. --- 309* (ÓËÊ)\n16:45 --- ïð ÑÒÐÓÊ.È ÎÐÃ.ÄÀÍÍ --- 218* (ÓËÊ)")
+
+                case 5:
+                    bot.send_message(message.chat.id, "09:00 --- ëåê ÑÒÐÓÊ.È ÎÐÃ.ÄÀÍÍ --- 526* (ÓËÊ)\n10:50 --- ïð ÈÍÔ.ÒÅÕÍ. È ÏÐÎÃÐ. --- 256* (ÓËÊ)\n12:40 --- ïð Ä.ÌÀÒ.È ÌÀÒ.ËÎÃ --- 422* (ÓËÊ)")
+
+                case 6:
+                    bot.send_message(message.chat.id, "ÏÀÐ ÍÅÒ! ÃÎÎÎÎÎÎÎÎË")
+
+
+    elif (message.text == "Çàâòðà"):
+        current_datatime = datetime.today()
+        WD = current_datatime.weekday() + 1
+        if WD > 6:
+            WD = 0
+        daysAfter = current_datatime.day
+
+
+        for i in range(SEMESTR_START_MOUTH, current_datatime.month):
+            daysAfter += DAY_COUNT[i-1]
+
+        daysAfter -= SEMESTR_START_DAY - 1
+
+        thisWeek = daysAfter // 7 + 1
+
+        if thisWeek % 2 == 0:
+            if (current_datatime.day + 1) <= DAY_COUNT[current_datatime.month]:
+                bot.send_message(message.chat.id, f'{current_datatime.day + 1} . {current_datatime.month} . {current_datatime.year}\n×ÅÒÍÀß íåäåëÿ ¹{thisWeek}\n{WEEK_DAYS[WD]}')
+            else:
+                bot.send_message(message.chat.id, f'1 . {current_datatime.month + 1} . {current_datatime.year}\n×ÅÒÍÀß íåäåëÿ ¹{thisWeek}\n{WEEK_DAYS[WD]}')
+        
+            match WD:
+                case 0:
+                    bot.send_message(message.chat.id, "16:45 - ïð ÝÊ ÏÎ ÔÊ È ÑÏÎÐÒÓ")
+
+                case 1:
+                    bot.send_message(message.chat.id, "14:55 --- ïð ÂÛÑØ. ÌÀÒÅÌÀÒ --- 213* (ÓËÊ)\n\n16:45 --- ëåê ÔÈÇÈÊÀ --- 327* (ÓËÊ)")
+
+                case 2:
+                    bot.send_message(message.chat.id, "10:50 --- ïð ÔÈÇÈÊÀ --- 328* (ÓËÊ)/n12:40 --- ëåê ÈÍÔ.ÒÅÕÍ. È ÏÐÎÃÐ. --- 310 (ÓËÊ)/n14:55 --- ïð ÝÊ ÏÎ ÔÊ È ÑÏÎÐÒÓ")
+
+                case 3:
+                    bot.send_message(message.chat.id, "10:50 --- ëåê Ä.ÌÀÒ.È ÌÀÒ.ËÎÃ --- 450 (ÓËÊ)\n12:40 --- ëåê ÈÑÒÎÐÈß --- 443 (ÓËÊ)\n14:55 --- ïð ÈÑÒÎÐÈß --- 487 (ÓËÊ)")
+
+                case 4:
+                    bot.send_message(message.chat.id, "12:40 --- ëåê ÂÛÑØ. ÌÀÒÅÌÀÒ --- 493 (ÓËÊ)\n14:55 --- ïð ÈÍ.ßÇ. --- 309* (ÓËÊ)")
+
+                case 5:
+                    bot.send_message(message.chat.id, "09:00 --- ëåê ÑÒÐÓÊ.È ÎÐÃ.ÄÀÍÍ --- 526* (ÓËÊ)\n10:50 --- ïð ÈÍÔ.ÒÅÕÍ. È ÏÐÎÃÐ. --- 256* (ÓËÊ)\n12:40 --- ïð Ä.ÌÀÒ.È ÌÀÒ.ËÎÃ --- 422* (ÓËÊ)")
+
+                case 6:
+                    bot.send_message(message.chat.id, "ÏÀÐ ÍÅÒ! ÃÎÎÎÎÎÎÎÎË")
+
+        else:
+            if (current_datatime.day + 1) <= DAY_COUNT[current_datatime.month]:
+                bot.send_message(message.chat.id, f'{current_datatime.day + 1} . {current_datatime.month} . {current_datatime.year}\nÍÅ×ÅÒÍÀß íåäåëÿ ¹{thisWeek}\n{WEEK_DAYS[WD]}')
+            else:
+                bot.send_message(message.chat.id, f'1 . {current_datatime.month + 1} . {current_datatime.year}\nÍÅ×ÅÒÍÀß íåäåëÿ ¹{thisWeek}\n{WEEK_DAYS[WD]}')
+            match WD:
+                case 0:
+                    bot.send_message(message.chat.id, "16:45 - ïð ÝÊ ÏÎ ÔÊ È ÑÏÎÐÒÓ")
+
+                case 1:
+                    bot.send_message(message.chat.id, "14:55 --- ïð ÂÛÑØ. ÌÀÒÅÌÀÒ --- 213* (ÓËÊ)\n16:45 --- ëåê ÔÈÇÈÊÀ --- 327* (ÓËÊ)")
+
+                case 2:
+                    bot.send_message(message.chat.id, "10:50 --- ëàá ÔÈÇÈÊÀ --- 323* (ÓËÊ)\n12:40 --- ëåê ÈÍÔ.ÒÅÕÍ. È ÏÐÎÃÐ. --- 310 (ÓËÊ)\n14:55 --- ïð ÝÊ ÏÎ ÔÊ È ÑÏÎÐÒÓ")
+
+                case 3:
+                    bot.send_message(message.chat.id, "09:00 --- ëàá ÝÊÎËÎÃÈß --- 384à (ÓËÊ)\n10:50 --- ëåê Ä.ÌÀÒ.È ÌÀÒ.ËÎÃ --- 450 (ÓËÊ)\n12:40 --- ëåê ÈÑÒÎÐÈß --- 443 (ÓËÊ)")
+
+                case 4:
+                    bot.send_message(message.chat.id, "10:50 --- ëåê ÝÊÎËÎÃÈß --- 374 (ÓËÊ)\n12:40 --- ëåê ÂÛÑØ. ÌÀÒÅÌÀÒ --- 493 (ÓËÊ)\n14:55 --- ïð ÈÍ.ßÇ. --- 309* (ÓËÊ)\n16:45 --- ïð ÑÒÐÓÊ.È ÎÐÃ.ÄÀÍÍ --- 218* (ÓËÊ)")
+
+                case 5:
+                    bot.send_message(message.chat.id, "09:00 --- ëåê ÑÒÐÓÊ.È ÎÐÃ.ÄÀÍÍ --- 526* (ÓËÊ)\n10:50 --- ïð ÈÍÔ.ÒÅÕÍ. È ÏÐÎÃÐ. --- 256* (ÓËÊ)\n12:40 --- ïð Ä.ÌÀÒ.È ÌÀÒ.ËÎÃ --- 422* (ÓËÊ)")
+
+                case 6:
+                    bot.send_message(message.chat.id, "ÏÀÐ ÍÅÒ! ÃÎÎÎÎÎÎÎÎË")
+
+
+
+
+bot.infinity_polling()
